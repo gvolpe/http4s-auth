@@ -20,39 +20,43 @@ object AuthHttpService {
 
   private val XAuthToken = "x-auth-token"
 
-  val unauthorized: Task[Response] = Task.now(Response(Status.Unauthorized)
-    .withAttribute(Fallthrough.fallthroughKey, ())
-    .withBody("Unauthorized.").run)
-
-  def findHttpUser(headers: List[Header])(implicit repo: TokenRepository): Option[HttpUser] =
-    for {
-      token <- headers.find(_.name.toString() == XAuthToken)
-      user  <- repo.find(HttpToken(token.value))
-    } yield user
-
-  def signUp(form: SignUpForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] = {
-    userRepo.save(User(form.username, form.password)) // TODO: encrypt password
-    val token = HttpUser.createToken
-    tokenRepo.save(HttpUser(form.username, 1L, token))
-    Ok(token)
+  val unauthorized: Task[Response] = Task.now {
+    Response(Status.Unauthorized)
+      .withAttribute(Fallthrough.fallthroughKey, ())
+      .withBody("Unauthorized.").run
   }
 
-  def logout(req: Request)(implicit repo: TokenRepository): Task[Response] = {
-    val userWithToken = findHttpUser(req.headers.toList)
-    userWithToken.foreach(repo.remove)
-    NoContent()
+  def findHttpUser(headers: List[Header])(implicit tokenRepo: TokenRepository): Option[HttpUser] =
+    for {
+      token <- headers.find(_.name.toString() == XAuthToken)
+      user  <- tokenRepo.find(HttpToken(token.value))
+    } yield user
+
+  def signUp(form: SignUpForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] =
+    for {
+      _         <- userRepo.save(User(form.username, form.password)) // TODO: encrypt password
+      token     = HttpUser.createToken
+      _         <- tokenRepo.save(HttpUser(form.username, 1L, token)) // TODO: Expiry key
+      response  <- Ok(token)
+    } yield response
+
+  def logout(req: Request)(implicit tokenRepo: TokenRepository): Task[Response] = {
+    findHttpUser(req.headers.toList) match {
+      case Some(user) =>
+        tokenRepo.remove(user).flatMap(_ => NoContent())
+      case None =>
+        NotFound()
+    }
   }
 
   def login(form: LoginForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] = {
     userRepo.find(form.username) match {
+      case Some(user) if user.password == form.password =>
+        val token = HttpUser.createToken
+        val user  = HttpUser(Random.nextLong().toString, 1L, token) // TODO: Expiry key
+        tokenRepo.save(user).flatMap(_ => Ok(token))
       case Some(user) =>
-        if (user.password == form.password) {
-          val token = HttpUser.createToken
-          tokenRepo.save(HttpUser(Random.nextLong().toString, 1L, token))
-          Ok(token)
-        } else {
-          unauthorized
-        }
+        unauthorized
       case None =>
         NotFound(s"Username ${form.username} not found!")
     }

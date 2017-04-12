@@ -1,6 +1,6 @@
 package com.gvolpe.http4s.auth.endpoint
 
-import com.gvolpe.http4s.auth.repository.{InMemoryTokenRepository, InMemoryUserRepository}
+import com.gvolpe.http4s.auth.repository.BindingsModule._
 import com.gvolpe.http4s.auth.service.Secured
 import io.circe._
 import io.circe.generic.auto._
@@ -14,9 +14,6 @@ object DemoHttpEndpoint {
 
   implicit def circeJsonDecoder[A](implicit decoder: Decoder[A]) = jsonOf[A]
   implicit def circeJsonEncoder[A](implicit encoder: Encoder[A]) = jsonEncoderOf[A]
-
-  implicit val authTokenRepository = InMemoryTokenRepository
-  implicit val authUserRepository  = InMemoryUserRepository
 
   val publicResource = HttpService {
     case GET -> Root / "public" =>

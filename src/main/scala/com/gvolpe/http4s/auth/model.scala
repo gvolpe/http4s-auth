@@ -13,6 +13,7 @@ object model {
   case class LoginForm(username: String, password: String)
 
   object HttpUser {
+    // TODO: Add logic for encryption / decryption of token
     def createToken: HttpToken = {
       val token = TimeUuid().toString
       println(token)
