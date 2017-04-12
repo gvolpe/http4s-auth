@@ -11,10 +11,10 @@ trait TokenRepository {
   def remove(user: HttpUser): Task[Unit]
 }
 
-object InMemoryTokenRepository extends TokenRepository {
+class InMemoryTokenRepository() extends TokenRepository {
   private val tokens = mutable.HashMap.empty[HttpToken, HttpUser]
 
   override def find(token: HttpToken): Option[HttpUser] = tokens.get(token)
   override def save(user: HttpUser): Task[Unit] = Task.delay { tokens.update(user.httpToken, user) }
-  override def remove(user: HttpUser): Task[Unit] = Task.delay {tokens.remove(user.httpToken) }
+  override def remove(user: HttpUser): Task[Unit] = Task.delay { tokens.remove(user.httpToken) }
 }

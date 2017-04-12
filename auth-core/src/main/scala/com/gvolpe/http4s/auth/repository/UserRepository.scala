@@ -11,7 +11,7 @@ trait UserRepository {
   def save(user: User): Task[Unit]
 }
 
-object InMemoryUserRepository extends UserRepository {
+class InMemoryUserRepository extends UserRepository {
   private val users  = mutable.HashMap.empty[Username, User]
 
   override def find(username: Username): Option[User] = users.get(username)

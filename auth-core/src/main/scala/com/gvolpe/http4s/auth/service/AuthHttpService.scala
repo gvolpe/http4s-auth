@@ -32,13 +32,19 @@ object AuthHttpService {
       user  <- tokenRepo.find(HttpToken(token.value))
     } yield user
 
-  def signUp(form: SignUpForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] =
-    for {
-      _         <- userRepo.save(User(form.username, form.password)) // TODO: encrypt password
-      token     = HttpUser.createToken
-      _         <- tokenRepo.save(HttpUser(form.username, 1L, token)) // TODO: Expiry key
-      response  <- Ok(token)
-    } yield response
+  def signUp(form: SignUpForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] = {
+    userRepo.find(form.username) match {
+      case Some(user) =>
+        Conflict(s"User with username ${user.username} already exists!")
+      case None =>
+        for {
+          _        <- userRepo.save(User(form.username, form.password)) // TODO: encrypt password
+          token    = HttpUser.createToken
+          _        <- tokenRepo.save(HttpUser(form.username, 1L, token)) // TODO: Expiry key
+          response <- Created(token)
+        } yield response
+    }
+  }
 
   def logout(req: Request)(implicit tokenRepo: TokenRepository): Task[Response] = {
     findHttpUser(req.headers.toList) match {

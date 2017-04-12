@@ -4,7 +4,7 @@ import com.gvolpe.http4s.auth.repository.{InMemoryTokenRepository, InMemoryUserR
 
 object BindingsModule {
 
-  implicit val authTokenRepository = InMemoryTokenRepository
-  implicit val authUserRepository  = InMemoryUserRepository
+  implicit val authTokenRepository = new InMemoryTokenRepository()
+  implicit val authUserRepository  = new InMemoryUserRepository()
 
 }
