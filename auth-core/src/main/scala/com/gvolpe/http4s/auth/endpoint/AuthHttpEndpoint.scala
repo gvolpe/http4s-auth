@@ -1,7 +1,7 @@
 package com.gvolpe.http4s.auth.endpoint
 
 import com.gvolpe.http4s.auth.model.{LoginForm, SignUpForm}
-import com.gvolpe.http4s.auth.repository.BindingsModule._
+import com.gvolpe.http4s.auth.repository.{TokenRepository, UserRepository}
 import com.gvolpe.http4s.auth.service.AuthHttpService
 import io.circe._
 import io.circe.generic.auto._
@@ -16,7 +16,7 @@ object AuthHttpEndpoint {
   implicit def circeJsonDecoder[A](implicit decoder: Decoder[A]) = jsonOf[A]
   implicit def circeJsonEncoder[A](implicit encoder: Encoder[A]) = jsonEncoderOf[A]
 
-  val service = HttpService {
+  def service(implicit tokenRepo: TokenRepository, userRepo: UserRepository) = HttpService {
     case req @ POST -> Root / "signup" =>
       req.decode[SignUpForm](AuthHttpService.signUp)
     case req @ POST -> Root / "login" =>

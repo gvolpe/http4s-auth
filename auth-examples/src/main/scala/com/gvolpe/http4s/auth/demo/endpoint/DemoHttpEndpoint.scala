@@ -1,11 +1,8 @@
-package com.gvolpe.http4s.auth.endpoint
+package com.gvolpe.http4s.auth.demo.endpoint
 
-import com.gvolpe.http4s.auth.repository.BindingsModule._
+import com.gvolpe.http4s.auth.demo.BindingsModule._
 import com.gvolpe.http4s.auth.service.Secured
 import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl._
