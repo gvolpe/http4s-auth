@@ -15,8 +15,7 @@ object Demo extends ServerApp {
     BlazeBuilder
       .bindHttp(8080, "localhost")
       .mountService(AuthHttpEndpoint.service)
-      .mountService(DemoHttpEndpoint.publicResource)
-      .mountService(DemoHttpEndpoint.protectedResource)
+      .mountService(DemoHttpEndpoint.service)
       .start
   }
 

@@ -20,11 +20,10 @@ object AuthHttpService {
 
   private val XAuthToken = "x-auth-token"
 
-  val unauthorized: Task[Response] = Task.now {
+  val unauthorized: Task[Response] =
     Response(Status.Unauthorized)
       .withAttribute(Fallthrough.fallthroughKey, ())
-      .withBody("Unauthorized.").run
-  }
+      .withBody("Unauthorized.")
 
   def findHttpUser(headers: List[Header])(implicit tokenRepo: TokenRepository): Option[HttpUser] =
     for {
@@ -42,14 +41,14 @@ object AuthHttpService {
           token    = HttpUser.createToken
           _        <- tokenRepo.save(HttpUser(form.username, 1L, token)) // TODO: Expiry key
           response <- Created(token)
-        } yield response
+        } yield response.addCookie(Cookie(XAuthToken, token.token))
     }
   }
 
   def logout(req: Request)(implicit tokenRepo: TokenRepository): Task[Response] = {
     findHttpUser(req.headers.toList) match {
       case Some(user) =>
-        tokenRepo.remove(user).flatMap(_ => NoContent())
+        tokenRepo.remove(user).flatMap(_ => NoContent().removeCookie(XAuthToken))
       case None =>
         NotFound()
     }
@@ -60,7 +59,7 @@ object AuthHttpService {
       case Some(user) if user.password == form.password =>
         val token = HttpUser.createToken
         val user  = HttpUser(Random.nextLong().toString, 1L, token) // TODO: Expiry key
-        tokenRepo.save(user).flatMap(_ => Ok(token))
+        tokenRepo.save(user).flatMap(_ => Ok(token).addCookie(Cookie(XAuthToken, token.token)))
       case Some(user) =>
         unauthorized
       case None =>
