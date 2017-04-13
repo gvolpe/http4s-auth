@@ -9,7 +9,7 @@ Although Http4s [now supports](http://http4s.org/v0.15/auth/) basic token-based 
 
 ## Authentication Methods
 
-####* Basic Authentication
+#### Basic Authentication
 
 By adding the AuthHttpEndpoint.service to the services you will have available the endpoints signup, login and logout:
 
@@ -96,8 +96,7 @@ object BindingsModule {
 
 	- **200 OK** in case of success with same body as signup.
 	- **401 UNAUTHORIZED** in case the password doesn't match.
-
-**NOTFOUND 404** if the user does not exist.
+	- **NOTFOUND 404** if the user does not exist.
 
 #### Logout
 
@@ -118,12 +117,12 @@ curl -X GET --header "X-Auth-Token: 35c07890-209d-11e7-a3b7-d13fe8119206" http:/
 
 --------------------------------------------
 
-###COMING SOON... WORK IN PROGRESS ...
+### COMING SOON... WORK IN PROGRESS ...
 
-####* OAuth1
-####* OAuth2
-####* OpenID 
-####* CAS
+#### OAuth1
+#### OAuth2
+#### OpenID 
+#### CAS
 
 ## LICENSE
 
