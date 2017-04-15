@@ -16,7 +16,6 @@ object model {
     // TODO: Add logic for encryption / decryption of token
     def createToken: HttpToken = {
       val token = TimeUuid().toString
-      println(token)
       HttpToken(token)
     }
   }

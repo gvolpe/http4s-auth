@@ -112,7 +112,7 @@ object BindingsModule {
 Any protected endpoint should include the **X-Auth-Token** in the request headers in order to authenticate it. Example:
 
 ```json
-curl -X GET --header "X-Auth-Token: 35c07890-209d-11e7-a3b7-d13fe8119206" http://localhost:8080/protected
+curl -X GET -H "X-Auth-Token: 35c07890-209d-11e7-a3b7-d13fe8119206" http://localhost:8080/protected
 ```
 
 --------------------------------------------
