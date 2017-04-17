@@ -3,7 +3,7 @@ package com.gvolpe.http4s.auth.repository
 import com.gvolpe.http4s.auth.model.{HttpToken, HttpUser}
 import org.scalatest.{FlatSpecLike, Matchers}
 
-import scalaz.\/-
+import scalaz.{-\/, \/-}
 
 class TokenRepositorySpec extends FlatSpecLike with Matchers {
 
@@ -15,7 +15,9 @@ class TokenRepositorySpec extends FlatSpecLike with Matchers {
 
   it should "NOT find a non existent token" in {
     val repo = new InMemoryTokenRepository()
-    repo.find(HttpToken("S3cr3t")).run should be (None)
+    val user = HttpUser("gvolpe", HttpToken("S3cr3t"))
+    repo.remove(user).run         shouldBe a [-\/[_]]
+    repo.find(user.httpToken).run shouldBe None
   }
 
   it should "find a token user" in {

@@ -14,7 +14,6 @@ import org.http4s.dsl._
 object AuthHttpEndpoint {
 
   implicit def circeJsonDecoder[A](implicit decoder: Decoder[A]) = jsonOf[A]
-  implicit def circeJsonEncoder[A](implicit encoder: Encoder[A]) = jsonEncoderOf[A]
 
   def service(implicit tokenRepo: TokenRepository, userRepo: UserRepository) = HttpService {
     case req @ POST -> Root / "signup" =>
