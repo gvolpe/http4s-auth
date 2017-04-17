@@ -2,7 +2,7 @@ http4s-auth
 ===========
 
 [ ![Codeship Status for gvolpe/http4s-auth](https://app.codeship.com/projects/213c5170-05d7-0135-edfd-52b395dcacd9/status?branch=master)](https://app.codeship.com/projects/213643)
-[![Coverage Status](https://coveralls.io/repos/github/gvolpe/http4s-auth/badge.svg?branch=34d695d6ce2fd48411ca36e70bb1b2b54ef9cc0b)](https://coveralls.io/github/gvolpe/http4s-auth?branch=34d695d6ce2fd48411ca36e70bb1b2b54ef9cc0b)
+[![Coverage Status](https://coveralls.io/repos/github/gvolpe/http4s-auth/badge.svg?branch=master)](https://coveralls.io/github/gvolpe/http4s-auth?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/94bf4c355bca4354a8c2a1cda3dc40b9)](https://www.codacy.com/app/volpegabriel/http4s-auth?utm_source=github.com&utm_medium=referral&utm_content=gvolpe/http4s-auth&utm_campaign=badger)
 
 Authentication library for [Http4s](http://http4s.org/)
