@@ -17,7 +17,6 @@ import scalaz.concurrent.Task
 
 object AuthHttpService {
 
-  implicit def circeJsonDecoder[A](implicit decoder: Decoder[A]) = jsonOf[A]
   implicit def circeJsonEncoder[A](implicit encoder: Encoder[A]) = jsonEncoderOf[A]
 
   private val XAuthToken = "x-auth-token"
