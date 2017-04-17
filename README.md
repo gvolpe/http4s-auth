@@ -5,7 +5,7 @@ Authentication library for [Http4s](http://http4s.org/)
 
 ## Introduction
 
-Although Http4s [now supports](http://http4s.org/v0.15/auth/) basic token-based authentication, the use of the same feature with this library it's IMO much simpler and different. In addition it provides three useful endpoints to add to your app: signup, login and logout.
+Although Http4s [now supports](http://http4s.org/v0.15/auth/) basic token-based authentication, the use of the same feature with this library it's IMO much simpler and different. Besides it works with previous version of Http4s v0.14.x.
 
 ## Authentication Methods
 
@@ -32,8 +32,10 @@ object Demo extends ServerApp {
 In order to secure an endpoint you just need to use **Secured** and have in scope implementations for TokenRepository and UserRepository:
 
 ```scala
+import com.gvolpe.http4s.auth.service.Secured
+
 object DemoHttpEndpoint {
- 
+
  import com.gvolpe.http4s.auth.demo.BindingsModule._
 
   val service = HttpService {

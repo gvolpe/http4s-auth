@@ -11,8 +11,8 @@ class AuthHttpServiceSpec extends AuthHttpServiceFixture {
   it should "authorized a request with a valid token" in {
     implicit val repo = new InMemoryTokenRepository()
 
-    val token = HttpToken("S3cr3t")
-    val user  = HttpUser("gvolpe", 1L, token)
+    val token = HttpUser.createToken("gvolpe")
+    val user  = HttpUser("gvolpe", token)
 
     repo.save(user).run
 
@@ -25,8 +25,8 @@ class AuthHttpServiceSpec extends AuthHttpServiceFixture {
   it should "NOT authorized a request without a valid token" in {
     implicit val repo = new InMemoryTokenRepository()
 
-    val token = HttpToken("S3cr3t")
-    val user  = HttpUser("gvolpe", 1L, token)
+    val token = HttpUser.createToken("gvolpe")
+    val user  = HttpUser("gvolpe", token)
 
     repo.save(user).run
 
@@ -39,8 +39,8 @@ class AuthHttpServiceSpec extends AuthHttpServiceFixture {
   it should "find a token user from headers" in {
     implicit val repo = new InMemoryTokenRepository()
 
-    val token = HttpToken("S3cr3t")
-    val user  = HttpUser("gvolpe", 1L, token)
+    val token = HttpUser.createToken("gvolpe")
+    val user  = HttpUser("gvolpe", token)
 
     repo.save(user).run
 

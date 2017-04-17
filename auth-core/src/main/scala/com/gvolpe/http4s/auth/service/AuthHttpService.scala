@@ -1,8 +1,5 @@
 package com.gvolpe.http4s.auth.service
 
-import java.time.Instant
-import java.time.temporal.ChronoUnit
-
 import com.gvolpe.http4s.auth.model._
 import com.gvolpe.http4s.auth.repository.{TokenRepository, UserRepository}
 import io.circe._
@@ -25,33 +22,35 @@ object AuthHttpService {
 
   private val XAuthToken = "x-auth-token"
 
-  val unauthorized: Task[Response] =
-    Response(Status.Unauthorized)
-      .withAttribute(Fallthrough.fallthroughKey, ())
-      .withBody("Unauthorized.")
+  val unauthorized: Task[Response] = Response(Status.Unauthorized).withBody("Unauthorized.")
 
-  // TODO: Also valid Cookie
-  def findHttpUser(headers: List[Header])(implicit tokenRepo: TokenRepository): Task[Option[HttpUser]] =
-    headers.find(_.name.toString() == XAuthToken) match {
-      case Some(token) =>
-        tokenRepo.find(HttpToken(token.value))
+  def findTokenFromHeaders(headers: List[Header]): Option[HttpUser] =
+    headers.find(_.name.toString() == XAuthToken) flatMap { tokenHeader =>
+      HttpUser.validateToken(HttpToken(tokenHeader.value))
+    }
+
+  def findHttpUser(headers: List[Header])(implicit tokenRepo: TokenRepository): Task[Option[HttpUser]] = {
+    findTokenFromHeaders(headers) match {
+      case Some(user) =>
+        tokenRepo.find(user.httpToken).map(_.filter(_ == user))
       case None =>
         Task.now(None)
     }
+  }
 
   def signUp(form: SignUpForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] = {
     userRepo.find(form.username) flatMap {
       case Some(user) =>
         Conflict(s"User with username ${user.username} already exists!")
       case None =>
-        val token = HttpUser.createToken
+        val token = HttpUser.createToken(form.username)
         (for {
           _ <- eitherT(userRepo.save(User(form.username, form.password))) // TODO: encrypt password
-          _ <- eitherT(tokenRepo.save(HttpUser(form.username, 1L, token))) // TODO: Expiry key
+          _ <- eitherT(tokenRepo.save(HttpUser(form.username, token))) // TODO: Expiry key
         } yield ()).run flatMap {
           case \/-(()) =>
-            val expires = Some(Instant.now().plus(1, ChronoUnit.DAYS))
-            Created(token).addCookie(Cookie(XAuthToken, token.token, expires))
+//            val expires = Some(Instant.now().plus(1, ChronoUnit.DAYS))
+            Created(token) //.addCookie(Cookie(XAuthToken, token.token, expires))
           case -\/(error) =>
             InternalServerError(error.getMessage)
         }
@@ -62,7 +61,7 @@ object AuthHttpService {
     findHttpUser(req.headers.toList) flatMap {
       case Some(user) =>
         tokenRepo.remove(user) flatMap {
-          case \/-(())    => NoContent().removeCookie(XAuthToken)
+          case \/-(())    => NoContent() //.removeCookie(XAuthToken)
           case -\/(error) => InternalServerError(error.getMessage) // TODO: Log error
         }
       case None =>
@@ -73,13 +72,14 @@ object AuthHttpService {
   def login(form: LoginForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] = {
     userRepo.find(form.username) flatMap {
       case Some(user) if user.password == form.password =>
-        val token = HttpUser.createToken
-        val user  = HttpUser(Random.nextLong().toString, 1L, token) // TODO: Expiry key
+        val token = HttpUser.createToken(form.username)
+        val user  = HttpUser(Random.nextLong().toString, token) // TODO: Expiry key
         tokenRepo.save(user).flatMap {
           case \/-(())    =>
-            val expires = Some(Instant.now().plus(1, ChronoUnit.DAYS))
-            Ok(token).addCookie(Cookie(XAuthToken, token.token, expires))
-          case -\/(error) => InternalServerError(error.getMessage) // TODO: Log error
+//            val expires = Some(Instant.now().plus(1, ChronoUnit.DAYS))
+            Ok(token) //.addCookie(Cookie(XAuthToken, token.token, expires))
+          case -\/(error) =>
+            InternalServerError(error.getMessage) // TODO: Log error
         }
       case Some(user) =>
         unauthorized
@@ -91,10 +91,9 @@ object AuthHttpService {
 }
 
 object Secured {
-  def apply(req: Request)(response: Task[Response])(implicit repo: TokenRepository): Task[Response] = {
+  def apply(req: Request)(response: Task[Response])(implicit repo: TokenRepository): Task[Response] =
     AuthHttpService.findHttpUser(req.headers.toList) flatMap {
       case Some(u) => response
       case None    => AuthHttpService.unauthorized
     }
-  }
 }
