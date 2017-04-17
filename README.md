@@ -1,6 +1,8 @@
 http4s-auth
 ===========
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/94bf4c355bca4354a8c2a1cda3dc40b9)](https://www.codacy.com/app/volpegabriel/http4s-auth?utm_source=github.com&utm_medium=referral&utm_content=gvolpe/http4s-auth&utm_campaign=badger)
+
 Authentication library for [Http4s](http://http4s.org/)
 
 ## Introduction
