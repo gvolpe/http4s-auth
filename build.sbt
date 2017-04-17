@@ -33,7 +33,8 @@ val commonSettings = Seq(
     // , "-Xlog-implicits"
     //"-Ydebug"
   ),
-  incOptions := incOptions.value.withNameHashing(true), // doesn't work on travis ;(
+  incOptions := incOptions.value.withNameHashing(true),
+  coverageExcludedPackages := "com\\.gvolpe\\.http4s\\.auth\\.demo.*",
   publishTo := {
     val sonatype = "https://oss.sonatype.org/"
     if (isSnapshot.value)
