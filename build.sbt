@@ -1,6 +1,6 @@
 name := """root"""
 
-version := "1.0"
+version := "0.1"
 
 lazy val circeVersion = "0.5.1"
 lazy val http4sVersion = "0.14.6"

@@ -16,9 +16,24 @@ object model {
   case class SignUpForm(username: String, password: String)
   case class LoginForm(username: String, password: String)
 
+  object User {
+
+    private val key    = PrivateKey(scala.io.Codec.toUTF8("Http4s-Auth-3ncrypt10n#"))
+    private val crypto = CryptoBits(key)
+
+    def encrypt(password: String): String = {
+      crypto.signToken(password, Clock.systemUTC().millis.toString)
+    }
+
+    def isPasswordValid(token: String, password: String): Boolean = {
+      crypto.validateSignedToken(token).contains(password)
+    }
+
+  }
+
   object HttpUser {
 
-    private val key    = PrivateKey(scala.io.Codec.toUTF8(Random.alphanumeric.take(20).mkString("")))
+    private val key    = PrivateKey(scala.io.Codec.toUTF8("Http4s-Auth-T0k3n$"))
     private val crypto = CryptoBits(key)
 
     def createToken(username: String): HttpToken = {

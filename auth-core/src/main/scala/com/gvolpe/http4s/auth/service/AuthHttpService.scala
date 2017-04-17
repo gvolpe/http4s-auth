@@ -9,8 +9,8 @@ import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl._
+import org.slf4j.LoggerFactory
 
-import scala.util.Random
 import scalaz.{-\/, \/-}
 import scalaz.EitherT.eitherT
 import scalaz.concurrent.Task
@@ -21,6 +21,8 @@ object AuthHttpService {
   implicit def circeJsonEncoder[A](implicit encoder: Encoder[A]) = jsonEncoderOf[A]
 
   private val XAuthToken = "x-auth-token"
+
+  private val log = LoggerFactory.getLogger(getClass)
 
   val unauthorized: Task[Response] = Response(Status.Unauthorized).withBody("Unauthorized.")
 
@@ -45,8 +47,8 @@ object AuthHttpService {
       case None =>
         val token = HttpUser.createToken(form.username)
         (for {
-          _ <- eitherT(userRepo.save(User(form.username, form.password))) // TODO: encrypt password
-          _ <- eitherT(tokenRepo.save(HttpUser(form.username, token))) // TODO: Expiry key
+          _ <- eitherT(userRepo.save(User(form.username, User.encrypt(form.password))))
+          _ <- eitherT(tokenRepo.save(HttpUser(form.username, token)))
         } yield ()).run flatMap {
           case \/-(()) =>
 //            val expires = Some(Instant.now().plus(1, ChronoUnit.DAYS))
@@ -61,8 +63,11 @@ object AuthHttpService {
     findHttpUser(req.headers.toList) flatMap {
       case Some(user) =>
         tokenRepo.remove(user) flatMap {
-          case \/-(())    => NoContent() //.removeCookie(XAuthToken)
-          case -\/(error) => InternalServerError(error.getMessage) // TODO: Log error
+          case \/-(())    =>
+            NoContent() //.removeCookie(XAuthToken)
+          case -\/(error) =>
+            log.info(s"Logout: ${error.getMessage}")
+            InternalServerError(error.getMessage)
         }
       case None =>
         NotFound()
@@ -71,15 +76,16 @@ object AuthHttpService {
 
   def login(form: LoginForm)(implicit tokenRepo: TokenRepository, userRepo: UserRepository): Task[Response] = {
     userRepo.find(form.username) flatMap {
-      case Some(user) if user.password == form.password =>
+      case Some(user) if User.isPasswordValid(user.password, form.password) =>
         val token = HttpUser.createToken(form.username)
-        val user  = HttpUser(Random.nextLong().toString, token) // TODO: Expiry key
+        val user  = HttpUser(form.username, token)
         tokenRepo.save(user).flatMap {
           case \/-(())    =>
 //            val expires = Some(Instant.now().plus(1, ChronoUnit.DAYS))
             Ok(token) //.addCookie(Cookie(XAuthToken, token.token, expires))
           case -\/(error) =>
-            InternalServerError(error.getMessage) // TODO: Log error
+            log.info(s"Logout: ${error.getMessage}")
+            InternalServerError(error.getMessage)
         }
       case Some(user) =>
         unauthorized

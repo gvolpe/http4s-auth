@@ -46,12 +46,12 @@ class AuthHttpEndpointSpec extends AuthHttpEndpointFixture {
     val token     = response.bodyAsString.drop(10).dropRight(2)
 
     val response2 = service(logoutRequestWithToken(token)).run
-    response2.status  should be (Status.NoContent)
+    response2.status should be (Status.NoContent)
   }
 
   it should "NOT login a non existent user" in {
     val response = authService.apply(loginRequest(LoginForm("gvolpe", "123456"))).run
-    response.status        should be (Status.NotFound)
+    response.status should be (Status.NotFound)
   }
 
   it should "NOT login an user if the password does not match" in {
@@ -60,7 +60,7 @@ class AuthHttpEndpointSpec extends AuthHttpEndpointFixture {
     service(request).run
 
     val response2 = service(loginRequest(LoginForm("gvolpe", "111111"))).run
-    response2.status        should be (Status.Unauthorized)
+    response2.status should be (Status.Unauthorized)
   }
 
   it should "login an user successfully" in {
