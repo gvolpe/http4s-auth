@@ -11,6 +11,19 @@ Authentication library for [Http4s](http://http4s.org/)
 
 Although Http4s [now supports](http://http4s.org/v0.15/auth/) basic token-based authentication, the use of the same feature with this library it's IMO much simpler and different. Besides it works with previous version of Http4s v0.14.x.
 
+## Usage
+
+Just add the following dependencies to your project (examples are optional):
+
+```scala
+libraryDependencies ++= Seq(
+  "com.github.gvolpe" %% "http4s-auth" % "0.1",
+  "com.github.gvolpe" %% "http4s-auth-examples" % "0.1"
+)
+```
+
+For now, it depends on Http4s v0.14.6 and it's only available for Scala 2.11.x. No releases scheduled for previous versions.
+
 ## Authentication Methods
 
 #### Basic Authentication

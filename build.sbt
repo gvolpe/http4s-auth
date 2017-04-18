@@ -6,7 +6,8 @@ lazy val circeVersion = "0.5.1"
 lazy val http4sVersion = "0.14.6"
 
 val commonSettings = Seq(
-  organization := "com.gvolpe.http4s.auth",
+  organization := "com.github.gvolpe",
+  version := "0.1",
   licenses +=("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
   homepage := Some(url("https://github.com/gvolpe/http4s-auth")),
   //releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -60,13 +61,15 @@ val commonSettings = Seq(
 )
 
 lazy val root = project.in(file("."))
-  .aggregate(authCore, authExamples)
+  .aggregate(`http4s-auth`, `http4s-auth-examples`)
 
-lazy val authCore = project.in(file("auth-core"))
+lazy val `http4s-auth` = project.in(file("auth-core"))
   .settings(commonSettings: _*)
 
-lazy val authExamples = project.in(file("auth-examples"))
+lazy val `http4s-auth-examples` = project.in(file("auth-examples"))
   .settings(commonSettings: _*)
-  .dependsOn(authCore)
+  .dependsOn(`http4s-auth`)
+
+sonatypeProfileName := "com.github.gvolpe"
 
 publishArtifact := false
