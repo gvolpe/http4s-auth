@@ -7,6 +7,10 @@ import org.http4s.server.{Server, ServerApp}
 
 import scalaz.concurrent.Task
 
+/**
+  * This Demo uses the provided signup, login and logout endpoints in @AuthHttpEndpoint so
+  * implementations for both Token and User repositories must be provided implicitly.
+  * */
 object Demo extends ServerApp {
 
   import BindingsModule._
