@@ -9,7 +9,7 @@ Authentication library for [Http4s](http://http4s.org/)
 
 ## Introduction
 
-Although Http4s [now supports](http://http4s.org/v0.15/auth/) basic token-based authentication, the use of the same feature with this library it's IMO much simpler and different. Besides it works with previous version of Http4s v0.14.x.
+Although Http4s [now supports](http://http4s.org/v0.15/auth/) basic token-based authentication, the idea behind this library is to support multiple authentication methods. And the same feature here is implemented quite differently. Besides, it works with previous version of Http4s v0.14.x.
 
 ## Usage
 
@@ -26,7 +26,7 @@ For now, it depends on Http4s v0.14.6 and it's only available for Scala 2.11.x. 
 
 However, it's possible to exclude the Http4s dependencies from your project and just include the version you need. A demonstration project using http4s v0.15 and http4s-auth v0.1 can be found [here](https://github.com/gvolpe/http4s-auth-015-demo). Take into account that it's only possible to use the Secured feature without the provided endpoints signup, login and logout that are implemented on top of the version 0.14.6.
 
-Http4s's guys are currently working very hard on the release of the major version 0.16 which supports Cats and FS2. It will soon be supported by this library.
+Http4s's guys are currently working very hard on the release of two major versions 0.16 & 0.17 that support Cats and FS2. It will be soon supported by this library.
 
 ## Authentication Methods
 

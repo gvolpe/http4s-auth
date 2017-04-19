@@ -1,13 +1,13 @@
 name := """root"""
 
-version := "0.1"
+version := "0.2-SNAPSHOT"
 
 lazy val circeVersion = "0.5.1"
 lazy val http4sVersion = "0.14.6"
 
 val commonSettings = Seq(
   organization := "com.github.gvolpe",
-  version := "0.1",
+  version := "0.2-SNAPSHOT",
   licenses +=("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
   homepage := Some(url("https://github.com/gvolpe/http4s-auth")),
   //releasePublishArtifactsAction := PgpKeys.publishSigned.value,
